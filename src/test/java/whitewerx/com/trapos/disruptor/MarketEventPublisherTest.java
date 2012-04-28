@@ -1,15 +1,11 @@
 package whitewerx.com.trapos.disruptor;
 
-import org.jboss.netty.util.internal.ReusableIterator;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
 import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import com.lmax.disruptor.RingBuffer;
-import com.lmax.disruptor.Sequencer;
 
 import whitewerx.com.trapos.gateway.TextMessageSubscriber;
 

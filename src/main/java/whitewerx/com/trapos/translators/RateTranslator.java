@@ -48,4 +48,14 @@ public class RateTranslator {
         
         return rate;
     }
+    
+    /**
+     * Quick verification to see if this can even handle the message.
+     * @param delimitedTrade
+     */
+    public boolean canHandle(String delimitedTrade) {
+        if(delimitedTrade.charAt(0)=='R')
+            return true;
+        return false;
+    }    
 }

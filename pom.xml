@@ -7,8 +7,24 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>trapos</name>
-	<url>http://maven.apache.org</url>
+	<name>Trapos Position built with Netty + LMAX Disruptor</name>
+	<description>A sample disruptor application that keeps a Position based on a Trade and Rate feed.</description>
+	<url>https://github.com/ericdwhite/traposc</url>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>ericdwhite</id>
+			<name>Eric D. White</name>
+			<email>eric@ericwhite.ca</email>
+		</developer>
+	</developers>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -78,30 +94,47 @@
 		</dependency>
 	</dependencies>
 
-	<plugins>
-		<plugin>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>cobertura-maven-plugin</artifactId>
-			<version>2.4</version>
-			<configuration>
-				<check>
-					<branchRate>85</branchRate>
-					<lineRate>85</lineRate>
-					<haltOnFailure>true</haltOnFailure>
-					<totalBranchRate>85</totalBranchRate>
-					<totalLineRate>85</totalLineRate>
-					<packageLineRate>85</packageLineRate>
-					<packageBranchRate>85</packageBranchRate>
-				</check>
-			</configuration>
-			<executions>
-				<execution>
-					<goals>
-						<goal>clean</goal>
-						<goal>check</goal>
-					</goals>
-				</execution>
-			</executions>
-		</plugin>
-	</plugins>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<check>
+						<branchRate>85</branchRate>
+						<lineRate>85</lineRate>
+						<haltOnFailure>true</haltOnFailure>
+						<totalBranchRate>85</totalBranchRate>
+						<totalLineRate>85</totalLineRate>
+						<packageLineRate>85</packageLineRate>
+						<packageBranchRate>85</packageBranchRate>
+					</check>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>clean</goal>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<formats>
+						<format>html</format>
+					</formats>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
 </project>

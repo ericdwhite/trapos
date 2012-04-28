@@ -29,9 +29,10 @@ public enum TradeMultiplier {
     public static TradeMultiplier multiplierFor(String token) {
         if (THOUSANDS.token.equals(token))
             return THOUSANDS;
-        if (MILLIONS.token.equals(token)) {
+        
+        if (MILLIONS.token.equals(token))
             return MILLIONS;
-        }
+
         if (ONE.token.equals(token))
             return ONE;
 

@@ -23,6 +23,7 @@ public class TradeTranslatorTest {
     Mockery context = new Mockery();
     
     private static final CurrencyPair EURUSD = new CurrencyPair("EUR", "USD");
+    private static final CurrencyPair USDCAD = new CurrencyPair("USD", "CAD");
 
     /**
      * Given T|B|5.1t|EURUSD|1.3124
@@ -54,7 +55,19 @@ public class TradeTranslatorTest {
         Trade trade = t.translate(delimitedTrade);
         assertThat(trade, equalTo(expected));
     }
-
+    
+    @Test
+    public void translatesATradeMessageMillionsMultiplier() throws Exception {
+        String delimitedTrade = "T|S|2m|R|USDCAD|1.0012";
+        
+        Amount twoMillion = new Amount(2000000.0, new Currency("USD"));
+        Rate atUSDCADRate = new Rate(1.0012, USDCAD);
+        final Trade expected = new Trade(TradeType.SELL, twoMillion, atUSDCADRate);
+        
+        TradeTranslator t = new TradeTranslator();
+        Trade trade = t.translate(delimitedTrade);
+        assertThat(trade, equalTo(expected));
+    }    
     
     @Test(expected=TranslateException.class)
     public void translateInvalidTradeMessage() throws Exception {
@@ -63,4 +76,20 @@ public class TradeTranslatorTest {
         TradeTranslator t = new TradeTranslator();
         t.translate(invalidTrade);
     }
+
+    @Test
+    public void shouldTranslateTradeMessages(){
+        String delimitedTrade = "T";
+        
+        TradeTranslator tradeTranslator = new TradeTranslator();
+        assertThat(tradeTranslator.canHandle(delimitedTrade), equalTo(true));
+    }
+    
+    @Test
+    public void shouldNotTranslateAnyOtherMessageTypes(){
+        String otherMessageType = "C";
+        
+        TradeTranslator tradeTranslator = new TradeTranslator();
+        assertThat(tradeTranslator.canHandle(otherMessageType), equalTo(false));
+    }    
 }

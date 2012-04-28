@@ -42,4 +42,23 @@ public class MarketTradeEventHandlerTest {
         
         h.onEvent(marketEvent, 1, true);
     }
+    
+    @Test
+    public void shouldNotConsumeRateEvents() throws Exception {
+        final String delimitedRate = "R|GBPUSD|1.6324";
+        
+        final TradeTranslator tradeTranslator = context.mock(TradeTranslator.class);
+        final MarketEvent marketEvent = context.mock(MarketEvent.class);
+        
+        final MarketTradeEventHandler h = new MarketTradeEventHandler(tradeTranslator);
+        context.checking(new Expectations(){{
+            oneOf(marketEvent).getMessage();
+            will(returnValue(delimitedRate));
+            
+            oneOf(tradeTranslator).canHandle(delimitedRate);
+            will(returnValue(false));
+        }});
+        
+        h.onEvent(marketEvent, 1, true);
+    }
 }

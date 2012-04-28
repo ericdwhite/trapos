@@ -29,10 +29,26 @@ public class RateTranslatorTest {
     }
     
     @Test(expected=TranslateException.class)
-    public void translateInvalidEURUSDRate() throws Exception {
+    public void shouldNotTranslateInvalidEURUSDRate() throws Exception {
         String invalidRate = "1.3123|EURUSD";
                 
         RateTranslator rateTranslator = new RateTranslator();
         rateTranslator.translate(invalidRate);
+    }
+
+    @Test
+    public void shouldTransalateRateMessages(){
+        String delimitedRate = "R";
+        
+        RateTranslator rateTranslator = new RateTranslator();
+        assertThat(rateTranslator.canHandle(delimitedRate), equalTo(true));
+    }
+    
+    @Test
+    public void shouldNotTranslateAnyOtherMessageTypes(){
+        String otherMessageType = "C";
+        
+        RateTranslator rateTranslator = new RateTranslator();
+        assertThat(rateTranslator.canHandle(otherMessageType), equalTo(false));
     }
 }
