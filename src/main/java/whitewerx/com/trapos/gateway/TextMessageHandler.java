@@ -44,7 +44,8 @@ public class TextMessageHandler extends SimpleChannelUpstreamHandler {
         if ("".equals(delimitedMessage))
             return;
 
-        l.info(delimitedMessage);
+        if(l.isTraceEnabled())
+            l.trace(delimitedMessage);
         if(shutdownRequestedIn(delimitedMessage))
             return;
         

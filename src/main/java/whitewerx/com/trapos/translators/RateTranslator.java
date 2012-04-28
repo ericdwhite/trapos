@@ -13,7 +13,7 @@ import whitewerx.com.trapos.model.Rate;
  * Translates String delimited rates into Rate objects.
  * 
  * <pre>
- * R|1.3124|EURUSD -> a EURUSD rate @ 1.3124
+ * R|EURUSD|1.3124 -> a EURUSD rate @ 1.3124
  * </pre>
  * 
  * @author ewhite
