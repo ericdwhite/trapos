@@ -4,11 +4,14 @@ import whitewerx.com.trapos.model.event.DomainEvents;
 import whitewerx.com.trapos.model.event.PositionChangeEvent;
 
 /**
- * This is an aggregated position due to trading, it also handles the PNL
- * changes due to rate updates.
+ * This is an aggregated position due to trading.
+ * 
+ * TODO: handle PNL changes due to rates.
  * 
  * In real system the handling of PNL would probably be elsewhere as it can be
  * complicated.
+ * 
+ * The two equivalent amounts can be used to calculate a book rate.
  * 
  * @author ewhite
  */
@@ -16,13 +19,19 @@ public class Position {
     
     private Amount ccy1Amount;
     private Amount ccy2Amount;
+    
+    /** Weighted average ccy1 amount in PNL currency */
     private Amount ccy1EquivalentInPNLCurrency;
+    
+    /** Weighted average ccy2 amount in PNL currency */
     private Amount ccy2EquivalentInPNLCurrency;
+    
     private CurrencyPair currencyPair;
     private Currency pnlCurrency;
     
     /**
-     * This constructor should be used for testing only.
+     * This constructor should be used for testing only.  Use {@PositionFactory} to
+     * create positions.
      * 
      * @param ccy1Amount in ccy1 currency
      * @param ccy2Amount in ccy2 currency
