@@ -99,9 +99,9 @@ barriers.
             +---+-->| TT |---+-----+
             |   |   +----+   |     |
             |   |            |     v
-     N   +----+ |            |  +-----+
-    ---->| G* | |            |  | POS |----> Console Log Position Update
-         +----+ |            |  +-----+
+     N   +----+ |            |   +----+
+    ---->| G* | |            |   | PP |----> Console Log Position Update
+         +----+ |            |   +----+
             |   |            |     ^
             |   |   +----+   |     |
             +---+-->| RT |---+-----+
@@ -109,8 +109,8 @@ barriers.
 
 (N)etty listening on 0.0.0.0:7000
 
-The (G)ateway is multithread(*), as the Netty server can accept more than one connection
-and process incomming messages on multiple threads.
+The (G)ateway could be multithreaded(*), as the Netty server can accept more than one connection
+and process incoming messages on multiple threads.  But it is currently configured for 1 thread.
 
     See: whitewerx.com.trapos.gateway.TextMessageHandler
          whitewerx.com.trapos.disruptor.MarketEventPublisher
@@ -122,6 +122,10 @@ The (TT)radeTranslator is a single threaded disruptor BatchProcessor.
 The (RT)rateTranslator is a single threaded disruptor BatchProcessor.
 
     See: whitewerx.com.trapos.disruptor.MarketRateEventHandler
+
+The (PP)ortfolio Position is a single threaded disruptor BatchProcessor.
+
+    See: whitewerx.com.trapos.disruptor.PortfolioPositionEventHandler 
 
 The (tB) is a sequence barrier for the two translators, both translators can execute
 as soon as a new event is available in the RingBuffer.

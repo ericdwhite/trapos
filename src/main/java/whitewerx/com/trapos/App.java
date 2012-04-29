@@ -30,9 +30,11 @@ import whitewerx.com.trapos.gateway.TextMessageGateway;
 /**
  * Starts the gateway and configures the disruptor to handle messages.
  * 
- * Message can be sent to the gateway using Netcat
+ * Message can be sent to the gateway using Netcat.
  * 
  * <pre>
+ * Examples of sending messages:
+ * 
  * cat SAMPLE-DATA.txt | nc localhost 7000
  * echo 'C|STOP' | nc 127.0.0.1 7000
  * </pre>
@@ -48,6 +50,9 @@ public class App implements ShutdownListener {
 
     private static final int RINGBUFFER_SIZE = 16;
 
+    /**
+     * Thread pool for disruptor threads.
+     */
     private ExecutorService threadPool = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
     Future<?>[] tasks = new Future<?>[THREAD_POOL_SIZE];
     private EventProcessor[] eventProcessors = new EventProcessor[THREAD_POOL_SIZE - 1];
@@ -69,27 +74,17 @@ public class App implements ShutdownListener {
         // Initial barrier
         SequenceBarrier translationBarrier = ringBuffer.newBarrier();
 
-        MarketTradeEventHandler tradeHandler = new MarketTradeEventHandler();
-        EventProcessor tradeProcessor = new BatchEventProcessor<MarketEvent>(ringBuffer, translationBarrier,
-                tradeHandler);
-        eventProcessors[0] = tradeProcessor;
-
-        MarketRateEventHandler rateHandler = new MarketRateEventHandler();
-        EventProcessor rateProcessor = new BatchEventProcessor<MarketEvent>(ringBuffer, translationBarrier, rateHandler);
-        eventProcessors[1] = rateProcessor;
+        EventProcessor tradeProcessor = createTradeProcessor(ringBuffer, translationBarrier);
+        EventProcessor rateProcessor = createRateProcessor(ringBuffer, translationBarrier);
 
         // Add the portfolio position aggregator with a barrier after both
         // processors.
         SequenceBarrier positionBarrier = ringBuffer.newBarrier(tradeProcessor.getSequence(),
                 rateProcessor.getSequence());
-        PortfolioPositionEventHandler portfolioPositionHandler = new PortfolioPositionEventHandler();
-        EventProcessor portfolioPositionProcessor = new BatchEventProcessor<MarketEvent>(ringBuffer, positionBarrier,
-                portfolioPositionHandler);
-        eventProcessors[2] = portfolioPositionProcessor;
+        EventProcessor portfolioPositionProcessor = createPortfolioPositionProcessor(ringBuffer, positionBarrier);
         
         // Netty Event Publisher
-        MarketEventPublisher eventPublisher = new MarketEventPublisher(new RingBufferAdapter<MarketEvent>(ringBuffer));
-        TextMessageGateway gateway = new TextMessageGateway(eventPublisher, this);
+        TextMessageGateway gateway = createGatewayEventPublisher(ringBuffer);
 
         // The producer can't move past this barrier.
         ringBuffer.setGatingSequences(tradeProcessor.getSequence(), rateProcessor.getSequence(),
@@ -103,6 +98,63 @@ public class App implements ShutdownListener {
 
         shutdown.await();
         l.info("Shutting down the app.");
+    }
+
+    /**
+     * G* in the README.md
+     * 
+     * @param ringBuffer
+     * @return
+     */
+    private TextMessageGateway createGatewayEventPublisher(RingBuffer<MarketEvent> ringBuffer) {
+        MarketEventPublisher eventPublisher = new MarketEventPublisher(new RingBufferAdapter<MarketEvent>(ringBuffer));
+        TextMessageGateway gateway = new TextMessageGateway(eventPublisher, this);
+        return gateway;
+    }
+
+    /**
+     * PP in the README.md
+     * 
+     * @param ringBuffer
+     * @param positionBarrier
+     * @return
+     */
+    private EventProcessor createPortfolioPositionProcessor(RingBuffer<MarketEvent> ringBuffer,
+            SequenceBarrier positionBarrier) {
+        PortfolioPositionEventHandler portfolioPositionHandler = new PortfolioPositionEventHandler();
+        EventProcessor portfolioPositionProcessor = new BatchEventProcessor<MarketEvent>(ringBuffer, positionBarrier,
+                portfolioPositionHandler);
+        eventProcessors[2] = portfolioPositionProcessor;
+        return portfolioPositionProcessor;
+    }
+
+    /**
+     * RT in the README.md
+     * 
+     * @param ringBuffer
+     * @param translationBarrier
+     * @return
+     */
+    private EventProcessor createRateProcessor(RingBuffer<MarketEvent> ringBuffer, SequenceBarrier translationBarrier) {
+        MarketRateEventHandler rateHandler = new MarketRateEventHandler();
+        EventProcessor rateProcessor = new BatchEventProcessor<MarketEvent>(ringBuffer, translationBarrier, rateHandler);
+        eventProcessors[1] = rateProcessor;
+        return rateProcessor;
+    }
+
+    /**
+     * TT in the README.md
+     * 
+     * @param ringBuffer
+     * @param translationBarrier
+     * @return
+     */
+    private EventProcessor createTradeProcessor(RingBuffer<MarketEvent> ringBuffer, SequenceBarrier translationBarrier) {
+        MarketTradeEventHandler tradeHandler = new MarketTradeEventHandler();
+        EventProcessor tradeProcessor = new BatchEventProcessor<MarketEvent>(ringBuffer, translationBarrier,
+                tradeHandler);
+        eventProcessors[0] = tradeProcessor;
+        return tradeProcessor;
     }
 
     /**
