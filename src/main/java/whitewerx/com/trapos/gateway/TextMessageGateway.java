@@ -32,11 +32,16 @@ import whitewerx.com.trapos.ShutdownListener;
  * @author ewhite
  */
 public class TextMessageGateway implements Runnable, ShutdownListener {
+    private static final Logger l = LoggerFactory.getLogger(TextMessageGateway.class.getName());
+
     private static final int TCPIP_PORT = 7000;
 
     private static final String TCPIP_INTERFACE = "0.0.0.0";
 
-    private static final Logger l = LoggerFactory.getLogger(TextMessageGateway.class.getName());
+    /**
+     * This must match the producing claim strategy.
+     */
+    public static int PUBLISHING_THREADS = 1;
 
     /**
      * The maximum line length of any text message, this is used in the framing
@@ -77,9 +82,9 @@ public class TextMessageGateway implements Runnable, ShutdownListener {
      */
     private ServerBootstrap createServer() {
         ExecutorService boss = Executors.newCachedThreadPool();
-        ExecutorService workers = Executors.newCachedThreadPool();
+        ExecutorService workers = Executors.newFixedThreadPool(PUBLISHING_THREADS);
 
-        factory = new NioServerSocketChannelFactory(boss, workers);
+        factory = new NioServerSocketChannelFactory(boss, workers, PUBLISHING_THREADS);
         ServerBootstrap bootstrap = new ServerBootstrap(factory);
         return bootstrap;
     }

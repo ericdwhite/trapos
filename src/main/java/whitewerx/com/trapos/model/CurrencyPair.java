@@ -46,6 +46,13 @@ public class CurrencyPair {
         return this.base;
     }
 
+    /**
+     * @return the quote currency == CCY2
+     */
+    public Currency getQuote() {
+        return this.quote;
+    }
+    
     @Override
     public String toString() {
         return base + "/" + quote;

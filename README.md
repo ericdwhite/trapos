@@ -3,9 +3,18 @@
 This is a sample application which shows one way to use the disruptor to keep 
 an in memory position based on trade and rate events.
 
+There is one HUGE caveat with this code, it doesn't persist anything so if the original
+event stream is lost, everything is LOST.  The intent of the example was to understand
+the disruptor sequencing and not create a persistent domain.
+
+The second is it only handles currency pairs quoted against dollar. Namely EURUSD, GBPUSD, etc.
+This is due to how the positions are calculated in the domain.
+
 Trade and rate events are sent into the disruptor via a line based protocol.  The
-project contains a Netty server that listens on port 7000.  The server supports
-the following messages
+project contains a Netty server that listens on 0.0.0.0:7000.  The state of the
+domain is modified by sending messages to the Netty server.
+
+The server supports the following messages
 
  * Trade - prefixed with 'T|'
  * Rate - prefixed with 'R|'
@@ -57,14 +66,22 @@ To load some message from the command line.
     cat SAMPLE-DATA.txt | nc 127.0.0.1 7000
     
 You should then see some console output like:
+     173 [pool-1-thread-1] INFO whitewerx.com.trapos.gateway.TextMessageGateway - Started the gateway. 0.0.0.0:7000
+    4063 [New I/O server worker #1-1] INFO whitewerx.com.trapos.disruptor.MarketEventPublisher - publishEvent: seq:0 event:MarketEvent [delimitedMessage=T|B|5.1t|R|EURUSD|1.3124, trade=null, rate=null]
+    4063 [New I/O server worker #1-1] INFO whitewerx.com.trapos.disruptor.MarketEventPublisher - publishEvent: seq:1 event:MarketEvent [delimitedMessage=T|S|6.1t|R|EURUSD|1.3125, trade=null, rate=null]
+    4063 [New I/O server worker #1-1] INFO whitewerx.com.trapos.disruptor.MarketEventPublisher - publishEvent: seq:2 event:MarketEvent [delimitedMessage=R|EURUSD|1.3126, trade=null, rate=null]
+    4068 [pool-1-thread-3] INFO whitewerx.com.trapos.disruptor.MarketRateEventHandler - onEvent: seq:2/true event: MarketEvent [delimitedMessage=R|EURUSD|1.3126, trade=null, rate=Rate [EUR/USD@1.3126]]
+    4076 [pool-1-thread-2] INFO whitewerx.com.trapos.disruptor.MarketTradeEventHandler - onEvent: seq:0/true event: MarketEvent [delimitedMessage=T|B|5.1t|R|EURUSD|1.3124, trade=Trade [BUY Amount [5100.0 EUR] at Rate [EUR/USD@1.3124]], rate=null]
+    4076 [pool-1-thread-4] INFO whitewerx.com.trapos.disruptor.PortfolioPositionEventHandler - onEvent: seq:0/true event: MarketEvent [delimitedMessage=T|B|5.1t|R|EURUSD|1.3124, trade=Trade [BUY Amount [5100.0 EUR] at Rate [EUR/USD@1.3124]], rate=null]
+    4076 [pool-1-thread-2] INFO whitewerx.com.trapos.disruptor.MarketTradeEventHandler - onEvent: seq:1/false event: MarketEvent [delimitedMessage=T|S|6.1t|R|EURUSD|1.3125, trade=Trade [SELL Amount [6100.0 EUR] at Rate [EUR/USD@1.3125]], rate=null]
 
-     167 [pool-1-thread-1] INFO whitewerx.com.trapos.gateway.TextMessageGateway - Started the gateway. 0.0.0.0:7000
-    7711 [New I/O server worker #1-1] INFO whitewerx.com.trapos.disruptor.MarketEventPublisher - publishEvent: seq:0 event:MarketEvent [delimitedMessage=T|B|5.1t|R|EURUSD|1.3124, trade=null, rate=null]
-    7711 [New I/O server worker #1-1] INFO whitewerx.com.trapos.disruptor.MarketEventPublisher - publishEvent: seq:1 event:MarketEvent [delimitedMessage=T|S|0.1t|R|EURUSD|1.3125, trade=null, rate=null]
-    7711 [New I/O server worker #1-1] INFO whitewerx.com.trapos.disruptor.MarketEventPublisher - publishEvent: seq:2 event:MarketEvent [delimitedMessage=R|EURUSD|1.3126, trade=null, rate=null]
-    7714 [pool-1-thread-3] INFO whitewerx.com.trapos.disruptor.MarketRateEventHandler - onEvent: seq:2/true event: MarketEvent [delimitedMessage=R|EURUSD|1.3126, trade=null, rate=Rate [EUR/USD@1.3126]]
-    7716 [pool-1-thread-2] INFO whitewerx.com.trapos.disruptor.MarketTradeEventHandler - onEvent: seq:0/true event: MarketEvent [delimitedMessage=T|B|5.1t|R|EURUSD|1.3124, trade=Trade [BUY Amount [5100.0 EUR] at Rate [EUR/USD@1.3124]], rate=null]
-    7716 [pool-1-thread-2] INFO whitewerx.com.trapos.disruptor.MarketTradeEventHandler - onEvent: seq:1/false event: MarketEvent [delimitedMessage=T|S|0.1t|R|EURUSD|1.3125, trade=Trade [SELL Amount [100.0 EUR] at Rate [EUR/USD@1.3125]], rate=null]
+With aggregated position updates
+
+    4080 [pool-1-thread-4] INFO whitewerx.com.trapos.disruptor.PortfolioPositionEventHandler - Position change. seq:0 pos:Position [ccy1Amount=Amount [5100.0 EUR], ccy2Amount=Amount [-6693.24 USD], ccy1EquivalentInPNLCurrency=Amount [6693.24 USD], ccy2EquivalentInPNLCurrency=Amount [-6693.24 USD], currencyPair=EUR/USD, pnlCurrency=USD]
+    4080 [pool-1-thread-4] INFO whitewerx.com.trapos.disruptor.PortfolioPositionEventHandler - onEvent: seq:1/false event: MarketEvent [delimitedMessage=T|S|6.1t|R|EURUSD|1.3125, trade=Trade [SELL Amount [6100.0 EUR] at Rate [EUR/USD@1.3125]], rate=null]
+    4080 [pool-1-thread-4] INFO whitewerx.com.trapos.disruptor.PortfolioPositionEventHandler - Position change. seq:1 pos:Position [ccy1Amount=Amount [-1000.0 EUR], ccy2Amount=Amount [1313.0100000000002 USD], ccy1EquivalentInPNLCurrency=Amount [-1313.0100000000002 USD], ccy2EquivalentInPNLCurrency=Amount [1313.0100000000002 USD], currencyPair=EUR/USD, pnlCurrency=USD]
+    4080 [pool-1-thread-4] INFO whitewerx.com.trapos.disruptor.PortfolioPositionEventHandler - onEvent: seq:2/true event: MarketEvent [delimitedMessage=R|EURUSD|1.3126, trade=null, rate=Rate [EUR/USD@1.3126]]
+
 
 To stop the server
 

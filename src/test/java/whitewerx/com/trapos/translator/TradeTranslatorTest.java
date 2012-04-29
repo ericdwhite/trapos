@@ -10,21 +10,19 @@ import org.junit.runner.RunWith;
 
 import whitewerx.com.trapos.model.Amount;
 import whitewerx.com.trapos.model.Currency;
-import whitewerx.com.trapos.model.CurrencyPair;
 import whitewerx.com.trapos.model.Rate;
 import whitewerx.com.trapos.model.Trade;
 import whitewerx.com.trapos.model.TradeType;
 import whitewerx.com.trapos.translators.TradeTranslator;
 import whitewerx.com.trapos.translators.TranslateException;
+import static whitewerx.com.trapos.util.CurrencyPairProvider.EURUSD;
+import static whitewerx.com.trapos.util.CurrencyPairProvider.USDCAD;
 
 @RunWith(JMock.class)
 public class TradeTranslatorTest {
     
     Mockery context = new Mockery();
     
-    private static final CurrencyPair EURUSD = new CurrencyPair("EUR", "USD");
-    private static final CurrencyPair USDCAD = new CurrencyPair("USD", "CAD");
-
     /**
      * Given T|B|5.1t|EURUSD|1.3124
      * 

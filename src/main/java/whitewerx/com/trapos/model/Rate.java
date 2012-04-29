@@ -1,7 +1,12 @@
 package whitewerx.com.trapos.model;
 
 /**
- * Immutable rate value object.
+ * A Rate specified in terms of the quote currency.
+ * 
+ * So a EURUSD rate of 1.3123 means that 1 EUR buys 1.3123 USD. Where EUR is the
+ * base currency, and USD is the quote currency.
+ * 
+ * http://en.wikipedia.org/wiki/Currency_pair
  * 
  * @author ewhite
  */
@@ -30,6 +35,17 @@ public class Rate {
      */
     public Currency getBaseCurrency() {
         return this.quotedPair.getBase();
+    }
+
+    /**
+     * @return the quote currency == CCY2
+     */
+    private Currency getQuoteCurrency() {
+        return this.quotedPair.getQuote();
+    }
+
+    public CurrencyPair getCurrencyPair() {
+        return this.quotedPair;
     }
 
     @Override
@@ -62,5 +78,12 @@ public class Rate {
             return false;
 
         return true;
+    }
+
+    public Amount multiply(Amount amount) {
+        if (!amount.currencyMatches(getBaseCurrency()))
+            throw new IllegalArgumentException("Currency mismatch.  Trying to multiply " + this + " with " + amount);
+        double atRate = this.rate;
+        return amount.convertTo(getQuoteCurrency(), atRate);
     }
 }

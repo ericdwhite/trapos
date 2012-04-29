@@ -14,12 +14,39 @@ public class Trade {
 
     private Rate dealRate;
 
+    /**
+     * FX deal for either a BUY or a SELL of a currency amount
+     * at the specified rate.
+     * <pre>
+     *   e.g.
+     *   Buy 5m EUR at Rate 1.3123 EURUSD.
+     * </pre>
+     * @param buyOrSell
+     * @param amount
+     * @param dealRate
+     */
     public Trade(TradeType buyOrSell, Amount amount, Rate dealRate) {
         this.buyOrSell = buyOrSell;
         this.amount = amount;
         this.dealRate = dealRate;
     }
+    
+    public Amount getAmount() {
+        return amount;
+    }
 
+    public CurrencyPair getCurrencyPair() {
+        return this.dealRate.getCurrencyPair();
+    }
+    
+    public Rate getDealRate() {
+        return this.dealRate;
+    }
+
+    public boolean isPurchase() {
+        return buyOrSell==TradeType.BUY;
+    }
+    
     @Override
     public String toString() {
         return "Trade [" + buyOrSell + " " + amount + " at " + dealRate + "]";
@@ -58,4 +85,5 @@ public class Trade {
             return false;
         return true;
     }
+
 }

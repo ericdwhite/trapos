@@ -19,12 +19,22 @@ public class Amount {
         this.currency = currency;
     }
 
+    /**
+     * Copy constructor.
+     */
+    public Amount(Amount toCopy) {
+        this.raw = toCopy.raw;
+        this.currency = toCopy.currency;
+    }
+    
+    public boolean currencyMatches(Currency other) {
+        return this.currency.equals(other);
+    }
+
     @Override
     public String toString() {
         return "Amount [" + raw + " " + currency + "]";
     }
-
-
 
     @Override
     public int hashCode() {
@@ -54,5 +64,35 @@ public class Amount {
         if (Double.doubleToLongBits(raw) != Double.doubleToLongBits(other.raw))
             return false;
         return true;
+    }
+
+    public Amount add(Amount addend) {
+        if (!this.currency.equals(addend.currency))
+            throw new IllegalArgumentException("Currency mismatch.  Trying to add " + this + " to " + addend);
+
+        return new Amount(this.raw + addend.raw, this.currency);
+    }
+
+    public Amount subtract(Amount subtrahend) {
+        if (!this.currency.equals(subtrahend.currency))
+            throw new IllegalArgumentException("Currency mismatch.  Trying to subtract " + this + " with " + subtrahend);
+
+        return new Amount(this.raw - subtrahend.raw, this.currency);
+    }
+    
+    /**
+     * Converts an amount to a quote currency at the specified rate.
+     * 
+     * <pre>
+     * this == 5m EUR
+     * becomes == 6m USD (with a rate of 1.2)
+     * </pre>
+     * 
+     * @param quoteCurrency of the underlying rate.
+     * @param atRate the conversion rate in terms of the base/quote.
+     * @return
+     */
+    public Amount convertTo(Currency quoteCurrency, double atRate) {
+        return new Amount(raw*atRate, quoteCurrency);
     }
 }

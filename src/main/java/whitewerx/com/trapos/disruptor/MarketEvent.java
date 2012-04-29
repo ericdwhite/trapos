@@ -50,4 +50,18 @@ public class MarketEvent {
             return new MarketEvent();
         }
     };
+
+    /**
+     * @return if there is a trade attached to the event.
+     */
+    public boolean isTradeEvent() {
+        return trade!=null;
+    }
+
+    /**
+     * @return the trade populated on the event.  May be null, check with isTradeEvent.
+     */
+    public Trade getTrade() {
+        return trade;
+    }
 }

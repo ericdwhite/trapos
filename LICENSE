@@ -13,3 +13,6 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
+ This uses the thirdparty software - see the dependencies list in the pom.xml
+ for referenced software.

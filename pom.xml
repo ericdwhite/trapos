@@ -7,7 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>Trapos Position built with Netty + LMAX Disruptor</name>
+	<name>Trapos Position built with Netty + Disruptor</name>
 	<description>A sample disruptor application that keeps a Position based on a Trade and Rate feed.</description>
 	<url>https://github.com/ericdwhite/traposc</url>
 	<licenses>
