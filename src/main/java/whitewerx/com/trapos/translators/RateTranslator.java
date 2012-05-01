@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import whitewerx.com.trapos.model.Currency;
 import whitewerx.com.trapos.model.CurrencyPair;
 import whitewerx.com.trapos.model.Rate;
 
@@ -42,7 +43,7 @@ public class RateTranslator {
         String ccy2 = m.group(CCY2);
         double atRate = Double.valueOf(m.group(RATE));
         
-        Rate rate = new Rate(atRate, new CurrencyPair(ccy1, ccy2));
+        Rate rate = new Rate(atRate, new CurrencyPair(new Currency(ccy1), new Currency(ccy2)));
         if(l.isTraceEnabled())
             l.trace(delimitedRate +"->" + rate);
         

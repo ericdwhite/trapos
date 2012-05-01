@@ -7,6 +7,8 @@ package whitewerx.com.trapos.model;
  * 
  * http://en.wikipedia.org/wiki/ISO_4217
  * 
+ * Note: this would probably be expanded to include rounding, significant digits, etc.
+ * 
  * @author ewhite
  */
 public class Currency {

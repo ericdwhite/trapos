@@ -92,7 +92,7 @@ public class Amount {
      * @param atRate the conversion rate in terms of the base/quote.
      * @return
      */
-    public Amount convertTo(Currency quoteCurrency, double atRate) {
+    public Amount convertToQuote(Currency quoteCurrency, double atRate) {
         return new Amount(raw*atRate, quoteCurrency);
     }
 }

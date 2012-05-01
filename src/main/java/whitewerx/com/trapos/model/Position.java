@@ -59,18 +59,17 @@ public class Position {
      * @param trade
      */
     public void add(Trade trade) {
-        if( trade.isPurchase() ) {
-            Amount ccy2AmountDelta = trade.getDealRate().multiply(trade.getAmount());
+        Amount ccy2AmountDelta = trade.getQuoteAmount();
 
-            ccy1Amount = ccy1Amount.add(trade.getAmount());
+        if( trade.isPurchase() ) {
+
+            ccy1Amount = ccy1Amount.add(trade.getBaseAmount());
             ccy2Amount = ccy2Amount.subtract(ccy2AmountDelta);
             
             ccy1EquivalentInPNLCurrency = ccy1EquivalentInPNLCurrency.add(ccy2AmountDelta);
             ccy2EquivalentInPNLCurrency = ccy2Amount;
         } else {
-            Amount ccy2AmountDelta = trade.getDealRate().multiply(trade.getAmount());
-
-            ccy1Amount = ccy1Amount.subtract(trade.getAmount());
+            ccy1Amount = ccy1Amount.subtract(trade.getBaseAmount());
             ccy2Amount = ccy2Amount.add(ccy2AmountDelta);
 
             ccy1EquivalentInPNLCurrency = ccy1EquivalentInPNLCurrency.subtract(ccy2AmountDelta);

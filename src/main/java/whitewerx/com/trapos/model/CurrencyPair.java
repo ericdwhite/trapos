@@ -30,15 +30,15 @@ public class CurrencyPair {
      * @param quote
      *            Currency 2
      */
-    public CurrencyPair(String base /* ccy1 */, String quote /* ccy2 */) {
+    public CurrencyPair(Currency base /* ccy1 */, Currency quote /* ccy2 */) {
         if (quote == null || base == null)
             throw new IllegalArgumentException(
                     "A non null quote and base currency must be specified. base:" + base
                             + " quote:" + quote);
-        this.quote = new Currency(quote);
-        this.base = new Currency(base);
+        this.quote = quote;
+        this.base = base;
     }
-
+    
     /**
      * @return the base currency == CCY1
      */

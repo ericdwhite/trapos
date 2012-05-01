@@ -31,16 +31,16 @@ public class Trade {
         this.dealRate = dealRate;
     }
     
-    public Amount getAmount() {
+    public Amount getBaseAmount() {
         return amount;
+    }
+
+    public Amount getQuoteAmount() {
+        return dealRate.convert(amount);
     }
 
     public CurrencyPair getCurrencyPair() {
         return this.dealRate.getCurrencyPair();
-    }
-    
-    public Rate getDealRate() {
-        return this.dealRate;
     }
 
     public boolean isPurchase() {
@@ -85,5 +85,4 @@ public class Trade {
             return false;
         return true;
     }
-
 }

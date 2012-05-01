@@ -80,10 +80,22 @@ public class Rate {
         return true;
     }
 
-    public Amount multiply(Amount amount) {
-        if (!amount.currencyMatches(getBaseCurrency()))
-            throw new IllegalArgumentException("Currency mismatch.  Trying to multiply " + this + " with " + amount);
+    /**
+     * Convert the CCY1 amount to a CCY2 amount using the rate.
+     * 
+     * This assumes that everything is foreign in terms of USD e.g. EURUSD,
+     * GBPUSD, etc.
+     * 
+     * @param baseAmount to convert
+     * @return
+     */
+    public Amount convert(Amount baseAmount) {
+        if (!baseAmount.currencyMatches(getBaseCurrency()))
+            throw new IllegalArgumentException(
+                    "The base amount currency does not match the rate base currency. Amount: " + baseAmount
+                            + " Rate Base Currency: " + getBaseCurrency());
+        
         double atRate = this.rate;
-        return amount.convertTo(getQuoteCurrency(), atRate);
+        return baseAmount.convertToQuote(getQuoteCurrency(), atRate);
     }
 }
